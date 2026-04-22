@@ -10,7 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // CORS — supports a comma-separated list in FRONTEND_URL
-  const allowedOrigins = (process.env.FRONTEND_URL || 'https://help-api.quizypilot.com')
+  const allowedOrigins = (process.env.FRONTEND_URL || 'https://help.quizypilot.com,http://localhost:5173')
     .split(',')
     .map((o: string) => o.trim())
     .filter(Boolean);

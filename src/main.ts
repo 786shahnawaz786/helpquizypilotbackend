@@ -9,9 +9,13 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix('api');
 
-  // CORS
+  // CORS — supports a comma-separated list in FRONTEND_URL
+  const allowedOrigins = (process.env.FRONTEND_URL || 'https://help-api.quizypilot.com')
+    .split(',')
+    .map((o: string) => o.trim())
+    .filter(Boolean);
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });

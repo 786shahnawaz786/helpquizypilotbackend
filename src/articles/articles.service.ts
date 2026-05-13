@@ -64,7 +64,7 @@ export class ArticlesService {
   async findByCategory(categoryId: string): Promise<ArticleDocument[]> {
     return this.articleModel
       .find({
-        category: new Types.ObjectId(categoryId),
+        category: categoryId,
         status: ArticleStatus.PUBLISHED,
         isActive: true,
       })

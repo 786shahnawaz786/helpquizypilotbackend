@@ -35,9 +35,10 @@ export class UsersService {
   async ensureDefaultAdmin(): Promise<void> {
     const count = await this.userModel.countDocuments();
     if (count === 0) {
-      // Default password is the email address itself
+      // Sample credentials: admin@helpsystem.io / admin123
       const defaultEmail = 'admin@helpsystem.io';
-      const passwordHash = await bcrypt.hash(defaultEmail, 12);
+      const defaultPassword = 'admin123';
+      const passwordHash = await bcrypt.hash(defaultPassword, 12);
       await this.userModel.create({
         email: defaultEmail,
         passwordHash,

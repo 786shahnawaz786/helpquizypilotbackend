@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Feedback, FeedbackDocument } from './feedback.schema';
+import { Feedback, FeedbackDocument, FeedbackStatus } from './feedback.schema';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { ArticlesService } from '../articles/articles.service';
 
@@ -18,6 +18,30 @@ export class FeedbackService {
     return this.feedbackModel.create(dto);
   }
 
+  async findAll(query: {
+    status?: FeedbackStatus;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ data: FeedbackDocument[]; total: number }> {
+    const filter: any = {};
+    if (query.status) filter.status = query.status;
+
+    const limit = query.limit || 50;
+    const skip = query.offset || 0;
+
+    const [data, total] = await Promise.all([
+      this.feedbackModel
+        .find(filter)
+        .populate('articleId', 'title slug')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.feedbackModel.countDocuments(filter),
+    ]);
+    return { data, total };
+  }
+
   async findByArticle(articleId: string): Promise<FeedbackDocument[]> {
     return this.feedbackModel
       .find({ articleId: new Types.ObjectId(articleId) })
@@ -31,5 +55,26 @@ export class FeedbackService {
       this.feedbackModel.countDocuments({ articleId: new Types.ObjectId(articleId), helpful: false }),
     ]);
     return { helpful, notHelpful, total: helpful + notHelpful };
+  }
+
+  async getOverallStats(): Promise<{ total: number; unread: number; helpful: number; notHelpful: number }> {
+    const [total, unread, helpful, notHelpful] = await Promise.all([
+      this.feedbackModel.countDocuments(),
+      this.feedbackModel.countDocuments({ status: FeedbackStatus.UNREAD }),
+      this.feedbackModel.countDocuments({ helpful: true }),
+      this.feedbackModel.countDocuments({ helpful: false }),
+    ]);
+    return { total, unread, helpful, notHelpful };
+  }
+
+  async updateStatus(id: string, status: FeedbackStatus): Promise<FeedbackDocument> {
+    const feedback = await this.feedbackModel.findByIdAndUpdate(id, { status }, { new: true });
+    if (!feedback) throw new NotFoundException('Feedback not found');
+    return feedback;
+  }
+
+  async delete(id: string): Promise<void> {
+    const result = await this.feedbackModel.findByIdAndDelete(id);
+    if (!result) throw new NotFoundException('Feedback not found');
   }
 }

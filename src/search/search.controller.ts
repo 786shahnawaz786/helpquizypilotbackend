@@ -21,4 +21,12 @@ export class SearchController {
   suggest(@Query('q') q: string) {
     return this.searchService.suggest(q);
   }
+
+  @Get('combined')
+  @ApiOperation({ summary: 'Search both articles and categories' })
+  @ApiQuery({ name: 'q', description: 'Search query' })
+  @ApiQuery({ name: 'limit', required: false })
+  combined(@Query('q') q: string, @Query('limit') limit?: number) {
+    return this.searchService.combined(q, limit || 8);
+  }
 }

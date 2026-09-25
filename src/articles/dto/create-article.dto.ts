@@ -21,6 +21,13 @@ export class CreateArticleDto {
   @IsNotEmpty()
   excerpt: string;
 
+  // Optional: articles written before thumbnails existed have none, and the
+  // author may simply not want one.
+  @ApiPropertyOptional({ example: 'https://cdn.example.com/uploads/cover.png' })
+  @IsOptional()
+  @IsString()
+  thumbnail?: string;
+
   @ApiProperty({ example: '# How to create your first quiz\n\nStep 1...' })
   @IsString()
   @IsNotEmpty()

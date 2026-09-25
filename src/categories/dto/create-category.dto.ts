@@ -17,6 +17,12 @@ export class CreateCategoryDto {
   @IsString()
   icon?: string;
 
+  // Cover image for the topic card. Falls back to icon + color when unset.
+  @ApiPropertyOptional({ example: 'https://cdn.example.com/uploads/topic.png' })
+  @IsOptional()
+  @IsString()
+  thumbnail?: string;
+
   @ApiPropertyOptional({ example: '#6366f1' })
   @IsOptional()
   @IsString()

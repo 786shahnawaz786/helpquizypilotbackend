@@ -17,6 +17,16 @@ export class Category {
   @Prop({ default: 'BookOpen' }) // Lucide icon name
   icon: string;
 
+  /**
+   * Cover image for the topic card on the help centre home page.
+   *
+   * Optional, and the card falls back to `icon` + `color` when it is empty —
+   * so existing categories keep rendering and the grid never shows holes
+   * while images are still being added.
+   */
+  @Prop({ trim: true, default: '' })
+  thumbnail: string;
+
   @Prop({ default: '#6366f1' })
   color: string;
 

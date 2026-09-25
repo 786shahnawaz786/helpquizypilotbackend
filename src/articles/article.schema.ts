@@ -22,6 +22,17 @@ export class Article {
   @Prop({ required: true, trim: true })
   excerpt: string;
 
+  /**
+   * Cover image shown on cards and at the top of the article.
+   *
+   * Stores whatever /uploads returns — an absolute Spaces URL, or a relative
+   * path that the client resolves against the backend origin. Optional: every
+   * article that existed before this field has none, and they must keep
+   * rendering, so the UI falls back rather than requiring one.
+   */
+  @Prop({ trim: true, default: '' })
+  thumbnail: string;
+
   @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
   category: Types.ObjectId;
 
